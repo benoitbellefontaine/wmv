@@ -3,14 +3,14 @@ import logo from './logo.svg';
 import './App.css';
 import Header from './Header'
 
-import alphaMale from './assets/obj/male02/male02.obj';
-import flatiron from './assets/obj/flatiron/13943_Flatiron_Building_v1_l1.obj';
-import mnogohome from './assets/obj/mnogohome/building.obj';
+import alphaMale  from './assets/obj/districts/male02.obj';
+import flatiron   from './assets/obj/districts/male02.obj';
+import alphaFemale from './assets/obj/districts/female02.obj';
 
 var opts = [
   {name:'district 1',source:alphaMale},
   {name:'district 2',source:flatiron},
-  {name:'district 3',source:mnogohome},
+  {name:'district 3',source:alphaFemale},
 ];
 
 class App extends React.Component {
@@ -18,7 +18,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          district_source: '../assets/obj/flatiron/13943_Flatiron_Building_v1_l1.obj', 
+          district_source: alphaMale, 
           district_name: 'district 1'
         };
         this.handleChange = this.handleChange.bind(this);
@@ -65,7 +65,7 @@ class App extends React.Component {
                     </div>
 
                     <section style={{width:'100vw'}}>
-                        <Header district={alphaMale} />
+                        <Header district={this.state.district_source} />
                     </section>
 
                 </div>
