@@ -1,17 +1,17 @@
 //import * as THREE from 'three';
-import SceneSubject from './SceneSubject';
-import ScenePlane from './ScenePlane';
-import SceneHierarchy from './SceneHierarchy';
-import SceneHelpers from './SceneHelpers';
-import SceneMale from './SceneMale';
-import SceneFemale from './SceneFemale';
-import SceneFlatiron from './SceneFlatiron';
-import GeneralLights from './GeneralLights';
+import SceneSubject     from './SceneSubject';
+import ScenePlane       from './ScenePlane';
+import SceneHierarchy   from './SceneHierarchy';
+import SceneHelpers     from './SceneHelpers';
+//import SceneMale        from './SceneMale';
+//import SceneFemale      from './SceneFemale';
+//import SceneFlatiron    from './SceneFlatiron';
+import GeneralLights    from './GeneralLights';
 
-import alphaTexture from '../assets/textures/UV_Grid_Sm.jpg';
-import alphaMale from '../assets/obj/male02/male02.obj';
-import flatiron from '../assets/obj/flatiron/13943_Flatiron_Building_v1_l1.obj';
-import mnogohome from '../assets/obj/mnogohome/building.obj';
+import alphaTexture     from '../assets/textures/UV_Grid_Sm.jpg';
+import alphaMale  from '../assets/obj/districts/male02.obj';
+import flatiron   from '../assets/obj/districts/male02.obj';
+import mnogohome  from '../assets/obj/districts/female02.obj';
 
 var THREE = require('three');
 var OBJLoader = require('three-obj-loader');
@@ -36,9 +36,9 @@ export default (canvas,id,district) => {
         y: 0
     }
 
-    let object;
+    let obj;
 
-    const scene = buildScene();
+    const scene = buildScene(district,loadObjects);
     const renderer = buildRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
     const controls = buildControls(camera,id);
@@ -51,49 +51,80 @@ export default (canvas,id,district) => {
     
     //loadObjects(scene);
 
-    function loadObjects(scene) {
-        function loadModel() {
-            object.traverse( function ( child ) {
-                if ( child.isMesh ) child.material.map = texture;
-            } );
-            object.position.y = - 95;
-            scene.add( object );
+    function createBase(x) {
+        return function (y) {
+            return x + y;
         }
-        var manager = new THREE.LoadingManager( loadModel );
-        manager.onProgress = function ( item, loaded, total ) {
-            console.log( item, loaded, total );
-        };
-        // texture
-        var textureLoader = new THREE.TextureLoader( manager );
-        var texture = textureLoader.load( alphaTexture );
-        // model
-        function onProgress( xhr ) {
-            if ( xhr.lengthComputable ) {
-                var percentComplete = xhr.loaded / xhr.total * 100;
-                console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-            }
-        }
-        function onError() {}
-        var loader = new THREE.OBJLoader( manager );
-        console.log('loading',district);
-        loader.load( district, function ( obj ) {
-            object = obj;
-        }, onProgress, onError );
     }
 
+    var addSix = createBase(6);
+    console.log('addSix',addSix(21));
+
+    /* */
+        function f1(subject, callback) {
+            alert(`Starting my ${subject} homework.`);
+            callback();
+        }
+        function f2() {
+            alert('Finished my homework');
+        }
+        //f1('math', f2);
+        
+        function buildScene(district,callback) {
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color("#FFF");
+            callback(scene,district)
+            return scene;
+        }
+
+        function loadObjects(scene,district) {
+            function loadModel() {
+                console.log('loadModel');
+                obj.traverse( function ( child ) {
+                    if ( child.isMesh ) child.material.map = texture;
+                } );
+                obj.position.y = - 95;
+                scene.add( obj );
+            }
+            var manager = new THREE.LoadingManager( loadModel );
+            manager.onProgress = function ( item, loaded, total ) {
+                console.log('manager.onProgress');
+                console.log( item, loaded, total );
+            };
+            // texture
+            var textureLoader = new THREE.TextureLoader( manager );
+            var texture = textureLoader.load( alphaTexture );
+            // model
+            function onProgress( xhr ) {
+                console.log('onProgress');
+                if ( xhr.lengthComputable ) {
+                    var percentComplete = xhr.loaded / xhr.total * 100;
+                    console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+                }
+            }
+            function onError() {}
+            var loader = new THREE.OBJLoader( manager );
+            loader.load( district, function ( objf ) {
+                console.log('loader.load');
+                obj = objf;
+            }, onProgress, onError );
+        }
+        
+    /**/
+/*
     function buildScene() {
         const scene = new THREE.Scene();
         //scene.add(obj);
         scene.background = new THREE.Color("#FFF");
         //scene.background = new THREE.Color("#000");
 
-        function loadObjects(scene) {
+        function loadObjects(scene,district) {
             function loadModel() {
-                object.traverse( function ( child ) {
+                obj.traverse( function ( child ) {
                     if ( child.isMesh ) child.material.map = texture;
                 } );
-                object.position.y = - 95;
-                scene.add( object );
+                obj.position.y = - 95;
+                scene.add( obj );
             }
             var manager = new THREE.LoadingManager( loadModel );
             manager.onProgress = function ( item, loaded, total ) {
@@ -112,16 +143,16 @@ export default (canvas,id,district) => {
             function onError() {}
             var loader = new THREE.OBJLoader( manager );
             console.log('loading',district);
-            loader.load( district, function ( obj ) {
-                object = obj;
+            loader.load( district, function ( objf ) {
+                obj = objf;
             }, onProgress, onError );
         }
 
-        loadObjects(scene);
+        loadObjects(scene,district);
 
         return scene;
     }
-
+*/
     function buildRender({ width, height }) {
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); 
         const DPR = window.devicePixelRatio ? window.devicePixelRatio : 1;
@@ -147,7 +178,7 @@ export default (canvas,id,district) => {
 
         // male
         const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-		camera.position.z = 250;
+		camera.position.y = 250;
 
         // flatiron 
         /*
@@ -194,6 +225,13 @@ export default (canvas,id,district) => {
         renderer.render(scene, camera);
     }
 
+    function load(newDistrict) {
+        console.log('new district',newDistrict);
+        scene.remove(obj);
+        loadObjects(scene,newDistrict);
+        scene.add(obj);
+    }
+
     function updateCameraPositionRelativeToMouse() {
         camera.position.x += (  (mousePosition.x * 0.01) - camera.position.x ) * 0.01;
         camera.position.y += ( -(mousePosition.y * 0.01) - camera.position.y ) * 0.01;
@@ -220,6 +258,7 @@ export default (canvas,id,district) => {
     return {
         update,
         onWindowResize,
-        onMouseMove
+        onMouseMove,
+        load
     }
 }

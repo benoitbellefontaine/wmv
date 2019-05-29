@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import SceneManager from './SceneManager';
 
 import alphaTexture from '../assets/textures/UV_Grid_Sm.jpg';
-import alphaMale from '../assets/obj/male02/male02.obj';
+import alphaMale from '../assets/obj/districts/male02.obj';
 
 var THREE = require('three');
 var OBJLoader = require('three-obj-loader');
@@ -46,7 +46,6 @@ export default (container,id,district) => {
     }
     
     loadObjects(alphaMale,
-
     function(object) {*/
 
         //console.log('STEP 2');
