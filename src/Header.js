@@ -8,8 +8,8 @@ export default class Header extends React.Component {
     
     componentDidMount() {
         this.sceneManager = 
-            threeEntryPoint(this.threeRootElement, "LittleGreenDiv", this.props.district );
-            console.log('this.sceneManager',this.sceneManager);
+            threeEntryPoint(this.threeRootElement, "LittleGreenDiv", this.props.district, this.props.root );
+        console.log('this.sceneManager',this.sceneManager);
     }
 
     componentDidUpdate(prevProps) {
