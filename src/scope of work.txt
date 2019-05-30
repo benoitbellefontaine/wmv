@@ -1,0 +1,121 @@
+hotspot
+ - pos xyz
+ - number of connected users (realtime information)
+ - 2d or 3d propagation map - circle or sphere radius 
+
+cable
+ - start pos xyz
+ - [point pos xyz]
+ - end pos xyz
+ - traffic bandwitdh (realtime information)
+
+switches
+ - pos xyz
+
+central network device
+  - pos xyz
+
+single page web app
+ - takes one or more districts (obj format)
+ - shows network elements (nodes, segments)
+ - displays color coded traffic information + number of users
+ - hovering over a hotspot shows propagation maps
+
+users
+ - able to navigate using touch screen (difficult)
+ - view wifi signal power
+ - view traffic
+
+- responsive - pc and tablet
+
+obj files
+ - districts
+ - networks elements (will use basic geometry in the first phase for simplicity)
+ - propagation maps
+
+GET 
+ - hotspot users
+ - network/traffic
+
+WMV connected to MQTT channel to GET data
+
+
+NETWORK ELEMENTS
+
+central network device
+ - pos xyz
+ - geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
+ - material = new THREE.MeshNormalMaterial();
+   OR
+ - material = new THREE.MeshBasicMaterial( { color: 0xff0000 } ); // red
+
+switch
+ - pos xyz
+ - var geometry = new THREE.SphereBufferGeometry( 1, 8, 8);
+ - material = new THREE.MeshNormalMaterial();
+   OR
+ - material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } ); // green
+
+hotspot
+ - pos xyz
+ - var geometry = new THREE.SphereBufferGeometry( 0.5, 8, 8 );
+ - material = new THREE.MeshNormalMaterial();
+   OR
+ - material = new THREE.MeshBasicMaterial( { color: 0x0000ff } ); // blue
+
+cable 
+ - pos start ... end
+ - var geometry_line = new THREE.Geometry();
+    geometry_line.vertices.push(
+        parent.position,
+        instance.position
+    );
+ - var material_line = new THREE.LineBasicMaterial({color: 0x000000});
+ - var line = new THREE.Line( geometry_line, material_line );
+   OR
+ - TubeGeometry
+
+DATA STRUCTURE (TREE) FOR NETWORK ELEMENTS
+
+type = ['root','switch','hotspot','link']
+
+export default {
+    name:'central network device', type:'root', position:{x:0,y:0,z:0},
+    children: [ // switches & hotspots
+        {name:'switch 1', type:'switch', position:{x:10,y:0,z:0},
+            children: [
+                { name: 'hotspot 1-1', type:'hotspot', position:{x:10,y:0,z:0} },
+                { name: 'link switch 1 - hotspot 1-1', type:'link', position:{x:10,y:0,z:0} },}
+                { name: 'hotspot 1-2', type:'hotspot', position:{x:10,y:0,z:0} },
+                { name: 'hotspot 1-3', type:'hotspot', position:{x:10,y:0,z:0} },
+                { name: 'switch 1-1', type:'switch', position:{x:10,y:0,z:0} },
+                    children: [
+                        {name: 'switch 1-1-1', type:'switch', position:{x:10,y:0,z:0}},
+                        {name: 'switch 1-1-2', type:'switch', position:{x:10,y:0,z:0},
+                            children: [
+                                {name: 'hotspot 1-1-2-1', type:'hotspot', position:{x:10,y:0,z:0}},
+                                {name: 'hotspot 1-1-2-2', type:'hotspot', position:{x:10,y:0,z:0}},
+                                {name: 'hotspot 1-1-2-3', type:'hotspot', position:{x:10,y:0,z:0}}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        { name:'switch 2', type:'switch', position:{x:10,y:0,z:0},
+            children: [
+                { name: 'hotspot 2-1', type:'hotspot', position:{x:10,y:0,z:0} },
+                { name: 'hotspot 2-2', type:'hotspot', position:{x:10,y:0,z:0} },
+                { name: 'hotspot 2-3', type:'hotspot', position:{x:10,y:0,z:0} },
+            ]
+        },
+        {
+            name: 'B',
+            children: [
+                { name: 'B1' }, 
+                { name: 'B2' }, 
+                { name: 'B3' }
+            ]
+        }
+    ]
+}
