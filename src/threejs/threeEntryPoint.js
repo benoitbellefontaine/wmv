@@ -8,55 +8,12 @@ var THREE = require('three');
 var OBJLoader = require('three-obj-loader');
 OBJLoader(THREE);
 
-export default (container,id,district) => {
-
-    /*function loadObjects(d,cb) {
-        let object;
-        console.log('STEP 1');
-        function loadModel() {
-            object.traverse( function ( child ) {
-                if ( child.isMesh ) child.material.map = texture;
-            } );
-            object.position.y = - 95;
-            //scene.add( object );
-            //return object;
-        }
-        var manager = new THREE.LoadingManager( loadModel );
-        manager.onProgress = function ( item, loaded, total ) {
-            console.log( item, loaded, total );
-        };
-        // texture
-        var textureLoader = new THREE.TextureLoader( manager );
-        var texture = textureLoader.load( alphaTexture );
-        // model
-        function onProgress( xhr ) {
-            if ( xhr.lengthComputable ) {
-                var percentComplete = xhr.loaded / xhr.total * 100;
-                console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-            }
-        }
-        function onError() { console.log('ONERROR') }
-        var loader = new THREE.OBJLoader( manager );
-        console.log('loading', d);
-        loader.load( d, function ( obj ) {
-            object = obj;
-            //return object;
-        }, onProgress, onError );
-        cb(object)
-    }
-    
-    loadObjects(alphaMale,
-    function(object) {*/
-
-        //console.log('STEP 2');
-        //console.log( 'ONJECT: ', object );
+export default (container,id,district,root) => {
 
         let canvas = createCanvas(document, container);
-        let sceneManager = SceneManager(canvas, id, district);
+        let sceneManager = SceneManager(canvas, id, district, root);
 
         //useEffect(() => console.log('mounted'), []);
-
-        console.log( '%%%%%%%%%%%%%%%%%%%%district: ', district );
 
         let canvasHalfWidth;
         let canvasHalfHeight;

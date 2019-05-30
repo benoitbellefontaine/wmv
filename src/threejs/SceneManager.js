@@ -19,7 +19,7 @@ OBJLoader(THREE);
 
 const OrbitControls = require("three-orbit-controls")(THREE);
 
-export default (canvas,id,district) => {
+export default (canvas,id,district,root) => {
 
     const clock = new THREE.Clock();
     const origin = new THREE.Vector3(0,0,0);
@@ -44,6 +44,9 @@ export default (canvas,id,district) => {
     const controls = buildControls(camera,id);
     const sceneSubjects = createSceneSubjects(scene);
 
+    console.log(root);
+    scene.add(root);
+
     // male
     //var pointLight = new THREE.PointLight( 0xffffff, 0.8 );
     //camera.add( pointLight );
@@ -51,16 +54,7 @@ export default (canvas,id,district) => {
     
     //loadObjects(scene);
 
-    function createBase(x) {
-        return function (y) {
-            return x + y;
-        }
-    }
-
-    var addSix = createBase(6);
-    console.log('addSix',addSix(21));
-
-    /* */
+    /* 
         function f1(subject, callback) {
             alert(`Starting my ${subject} homework.`);
             callback();
@@ -69,90 +63,48 @@ export default (canvas,id,district) => {
             alert('Finished my homework');
         }
         //f1('math', f2);
-        
-        function buildScene(district,callback) {
-            const scene = new THREE.Scene();
-            scene.background = new THREE.Color("#FFF");
-            callback(scene,district)
-            return scene;
-        }
+    */
 
-        function loadObjects(scene,district) {
-            function loadModel() {
-                console.log('loadModel');
-                obj.traverse( function ( child ) {
-                    if ( child.isMesh ) child.material.map = texture;
-                } );
-                obj.position.y = - 95;
-                scene.add( obj );
-            }
-            var manager = new THREE.LoadingManager( loadModel );
-            manager.onProgress = function ( item, loaded, total ) {
-                console.log('manager.onProgress');
-                console.log( item, loaded, total );
-            };
-            // texture
-            var textureLoader = new THREE.TextureLoader( manager );
-            var texture = textureLoader.load( alphaTexture );
-            // model
-            function onProgress( xhr ) {
-                console.log('onProgress');
-                if ( xhr.lengthComputable ) {
-                    var percentComplete = xhr.loaded / xhr.total * 100;
-                    console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-                }
-            }
-            function onError() {}
-            var loader = new THREE.OBJLoader( manager );
-            loader.load( district, function ( objf ) {
-                console.log('loader.load');
-                obj = objf;
-            }, onProgress, onError );
-        }
-        
-    /**/
-/*
-    function buildScene() {
+    function buildScene(district,callback) {
         const scene = new THREE.Scene();
-        //scene.add(obj);
         scene.background = new THREE.Color("#FFF");
-        //scene.background = new THREE.Color("#000");
-
-        function loadObjects(scene,district) {
-            function loadModel() {
-                obj.traverse( function ( child ) {
-                    if ( child.isMesh ) child.material.map = texture;
-                } );
-                obj.position.y = - 95;
-                scene.add( obj );
-            }
-            var manager = new THREE.LoadingManager( loadModel );
-            manager.onProgress = function ( item, loaded, total ) {
-                console.log( item, loaded, total );
-            };
-            // texture
-            var textureLoader = new THREE.TextureLoader( manager );
-            var texture = textureLoader.load( alphaTexture );
-            // model
-            function onProgress( xhr ) {
-                if ( xhr.lengthComputable ) {
-                    var percentComplete = xhr.loaded / xhr.total * 100;
-                    console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-                }
-            }
-            function onError() {}
-            var loader = new THREE.OBJLoader( manager );
-            console.log('loading',district);
-            loader.load( district, function ( objf ) {
-                obj = objf;
-            }, onProgress, onError );
-        }
-
-        loadObjects(scene,district);
-
+        //callback(scene,district)
         return scene;
     }
-*/
+
+    function loadObjects(scene,district) {
+        function loadModel() {
+            console.log('loadModel');
+            obj.traverse( function ( child ) {
+                if ( child.isMesh ) child.material.map = texture;
+            } );
+            obj.position.y = - 95;
+            scene.add( obj );
+        }
+        var manager = new THREE.LoadingManager( loadModel );
+        manager.onProgress = function ( item, loaded, total ) {
+            console.log('manager.onProgress');
+            console.log( item, loaded, total );
+        };
+        // texture
+        var textureLoader = new THREE.TextureLoader( manager );
+        var texture = textureLoader.load( alphaTexture );
+        // model
+        function onProgress( xhr ) {
+            console.log('onProgress');
+            if ( xhr.lengthComputable ) {
+                var percentComplete = xhr.loaded / xhr.total * 100;
+                console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+            }
+        }
+        function onError() {}
+        var loader = new THREE.OBJLoader( manager );
+        loader.load( district, function ( objf ) {
+            console.log('loader.load');
+            obj = objf;
+        }, onProgress, onError );
+    }
+
     function buildRender({ width, height }) {
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); 
         const DPR = window.devicePixelRatio ? window.devicePixelRatio : 1;
@@ -177,8 +129,8 @@ export default (canvas,id,district) => {
         //camera.position.z = 40;
 
         // male
-        const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-		camera.position.y = 250;
+        const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
+		camera.position.z = 300;
 
         // flatiron 
         /*
