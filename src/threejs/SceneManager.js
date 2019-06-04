@@ -2,7 +2,9 @@
 import SceneSubject     from './SceneSubject';
 import ScenePlane       from './ScenePlane';
 import SceneHierarchy   from './SceneHierarchy';
+import SceneHumanHierarchy   from './SceneHumanHierarchy';
 import SceneHelpers     from './SceneHelpers';
+import SceneRaycaster   from './SceneRaycaster';
 //import SceneMale        from './SceneMale';
 //import SceneFemale      from './SceneFemale';
 //import SceneFlatiron    from './SceneFlatiron';
@@ -24,6 +26,9 @@ export default (canvas,id,district,root) => {
     const clock = new THREE.Clock();
     const origin = new THREE.Vector3(0,0,0);
 
+    var raycaster = new THREE.Raycaster();
+	var mouse = new THREE.Vector2();
+
     console.log('SM:district', district);
 
     const screenDimensions = {
@@ -38,22 +43,19 @@ export default (canvas,id,district,root) => {
 
     let obj;
 
-    const scene = buildScene(district,loadObjects);
+    const scene = buildScene(district,loadOBJFile);
+
+    for (var i = 0; i<root.elements.length; i++) {
+        scene.add(root.elements[i]);
+    }
+
+    scene.add(root.cubes);
+
     const renderer = buildRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
     const controls = buildControls(camera,id);
     const sceneSubjects = createSceneSubjects(scene);
-
-    console.log(root);
-    scene.add(root);
-
-    // male
-    //var pointLight = new THREE.PointLight( 0xffffff, 0.8 );
-    //camera.add( pointLight );
-    //scene.add( camera );
     
-    //loadObjects(scene);
-
     /* 
         function f1(subject, callback) {
             alert(`Starting my ${subject} homework.`);
@@ -68,15 +70,37 @@ export default (canvas,id,district,root) => {
     function buildScene(district,callback) {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color("#FFF");
+        //scene.background = new THREE.Color("#000");
         //callback(scene,district)
         return scene;
     }
 
+    function loadOBJFile(scene,objFile){            
+        /* material of OBJ model */                                       
+        var OBJMaterial = new THREE.MeshPhongMaterial({color: 0xff0000,transparent:true,opacity:0.1});
+        var loader = new THREE.OBJLoader();
+        loader.load(objFile, function (object){
+            object.traverse (function (child){
+                if (child instanceof THREE.Mesh) {
+                    child.material = OBJMaterial;
+                }
+            });
+            object.name = objFile;
+            obj = object.name
+            object.position.y = -100;
+            scene.add(object);
+        });
+    }
+
     function loadObjects(scene,district) {
+        var OBJMaterial = new THREE.MeshPhongMaterial({color: 0x8888ff});
         function loadModel() {
             console.log('loadModel');
             obj.traverse( function ( child ) {
-                if ( child.isMesh ) child.material.map = texture;
+                if ( child.isMesh ) {
+                    //child.material.map = texture;
+                    child.material = OBJMaterial;
+                }
             } );
             obj.position.y = - 95;
             scene.add( obj );
@@ -121,16 +145,18 @@ export default (canvas,id,district,root) => {
         const aspectRatio = width / height;
         const fieldOfView = 60;
         const nearPlane = 4;
-        const farPlane = 100; 
-        //const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        //camera.position.z = 40;
+        const farPlane = 500;
+
+        const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+        camera.position.z = 15;
 
         //const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
         //camera.position.z = 40;
 
         // male
-        const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
-		camera.position.z = 300;
+        //const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
+		//camera.position.z = 100;
+        //camera.position.y = 100;
 
         // flatiron 
         /*
@@ -155,16 +181,41 @@ export default (canvas,id,district,root) => {
             GeneralLights(scene),
             //SceneSubject(scene),
             //ScenePlane(scene),
+            //SceneHumanHierarchy(scene),
             //SceneHierarchy(scene),
-            //SceneHelpers(scene),
+            SceneHelpers(scene),
             //SceneFemale(scene),
             //SceneFlatiron(scene),
+            SceneRaycaster(canvas,scene,camera,renderer),
         ];
 
         return sceneSubjects;
     }
 
-    function update() {
+    const pickPosition = {x: 0, y: 0};
+    //const pickHelper = new PickHelper();
+    clearPickPosition();
+
+    function setPickPosition(clientX,clientY) {
+        pickPosition.x = (clientX / canvas.clientWidth) *  2 - 1;
+        pickPosition.y = (clientY / canvas.clientHeight) * -2 + 1;  // note we flip Y
+    }
+
+    function clearPickPosition() {
+        // unlike the mouse which always has a position
+        // if the user stops touching the screen we want
+        // to stop picking. For now we just pick a value
+        // unlikely to pick something
+        pickPosition.x = -100000;
+        pickPosition.y = -100000;
+    }
+        
+    /*window.addEventListener('mousemove', setPickPosition);
+    window.addEventListener('mouseout', clearPickPosition);
+    window.addEventListener('mouseleave', clearPickPosition);*/
+
+    function update(time) {
+        time *= 0.001;
         const elapsedTime = clock.getElapsedTime();
 
         for(let i=0; i<sceneSubjects.length; i++)
@@ -174,14 +225,24 @@ export default (canvas,id,district,root) => {
 
         //controls.update();
 
+        //pickHelper.pick(pickPosition, scene, camera, time);
+
         renderer.render(scene, camera);
     }
 
     function load(newDistrict) {
-        console.log('new district',newDistrict);
-        scene.remove(obj);
-        loadObjects(scene,newDistrict);
+        var selectedObject = scene.getObjectByName(obj);
+        console.log('obj',obj);
+        scene.remove( selectedObject );
+        obj = newDistrict;
+        loadOBJFile(scene,obj);
         scene.add(obj);
+    }
+
+    function zoom(value) {
+        if (zoom === 1)
+            camera.position.z += 10;
+        else camera.position.z += -10;
     }
 
     function updateCameraPositionRelativeToMouse() {
@@ -205,12 +266,29 @@ export default (canvas,id,district,root) => {
     function onMouseMove(x, y) {
         mousePosition.x = x;
         mousePosition.y = y;
+        setPickPosition(x,y);
+        //console.log('x,y::',x,y)
+    }
+
+    function onMouseOut(x, y) {
+        mousePosition.x = x;
+        mousePosition.y = y;
+        clearPickPosition();
+    }
+
+    function onMouseLeave(x, y) {
+        mousePosition.x = x;
+        mousePosition.y = y;
+        clearPickPosition();
     }
 
     return {
         update,
         onWindowResize,
         onMouseMove,
-        load
+        onMouseOut,
+        onMouseLeave,
+        load,
+        zoom
     }
 }
