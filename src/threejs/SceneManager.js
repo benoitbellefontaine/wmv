@@ -1,19 +1,23 @@
 //import * as THREE from 'three';
-import SceneSubject     from './SceneSubject';
-import ScenePlane       from './ScenePlane';
-import SceneHierarchy   from './SceneHierarchy';
-import SceneHumanHierarchy   from './SceneHumanHierarchy';
-import SceneHelpers     from './SceneHelpers';
-import SceneRaycaster   from './SceneRaycaster';
-//import SceneMale        from './SceneMale';
-//import SceneFemale      from './SceneFemale';
-//import SceneFlatiron    from './SceneFlatiron';
-import GeneralLights    from './GeneralLights';
+import SceneSubject         from './SceneSubject';
+import ScenePlane           from './ScenePlane';
+import SceneHierarchy       from './SceneHierarchy';
+import SceneHumanHierarchy  from './SceneHumanHierarchy';
+import SceneHelpers         from './SceneHelpers';
+import ScenePeriodicTable   from './ScenePeriodicTable';
+import SceneRaycaster       from './SceneRaycaster';
+//import SceneMale          from './SceneMale';
+//import SceneFemale        from './SceneFemale';
+//import SceneFlatiron      from './SceneFlatiron';
+import GeneralLights        from './GeneralLights';
 
 import alphaTexture     from '../assets/textures/UV_Grid_Sm.jpg';
 import alphaMale  from '../assets/obj/districts/male02.obj';
 import flatiron   from '../assets/obj/districts/male02.obj';
 import mnogohome  from '../assets/obj/districts/female02.obj';
+
+import { CSS3DObject, CSS3DRenderer } from 'three-css3drenderer';
+//CSS3DRenderer(THREE);
 
 var THREE = require('three');
 var OBJLoader = require('three-obj-loader');
@@ -45,6 +49,8 @@ export default (canvas,id,district,root) => {
 
     const scene = buildScene(district,loadOBJFile);
 
+    //const scene2 = new THREE.Scene();
+
     for (var i = 0; i<root.elements.length; i++) {
         scene.add(root.elements[i]);
     }
@@ -52,9 +58,14 @@ export default (canvas,id,district,root) => {
     scene.add(root.cubes);
 
     const renderer = buildRender(screenDimensions);
+    //const renderer2 = buildCSS3DRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
     const controls = buildControls(camera,id);
     const sceneSubjects = createSceneSubjects(scene);
+
+    //ScenePeriodicTable(scene2);
+
+   // console.log(scene2)
     
     /* 
         function f1(subject, callback) {
@@ -69,8 +80,8 @@ export default (canvas,id,district,root) => {
 
     function buildScene(district,callback) {
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color("#FFF");
-        //scene.background = new THREE.Color("#000");
+        //scene.background = new THREE.Color("#FFF");
+        scene.background = new THREE.Color("#000");
         //callback(scene,district)
         return scene;
     }
@@ -141,14 +152,22 @@ export default (canvas,id,district,root) => {
         return renderer;
     }
 
+    function buildCSS3DRender({ width, height }) {
+        const renderer = new CSS3DRenderer();
+        renderer.setSize(width, height);
+        renderer.domElement.style.position = 'absolute';
+		renderer.domElement.style.top = 0;       
+        return renderer; 
+    }
+
     function buildCamera({ width, height }) {
         const aspectRatio = width / height;
         const fieldOfView = 60;
         const nearPlane = 4;
-        const farPlane = 500;
+        const farPlane = 200;
 
         const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        camera.position.z = 15;
+        camera.position.z = 75;
 
         //const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
         //camera.position.z = 40;
@@ -185,7 +204,7 @@ export default (canvas,id,district,root) => {
             //SceneHierarchy(scene),
             SceneHelpers(scene),
             //SceneFemale(scene),
-            //SceneFlatiron(scene),
+            //ScenePeriodicTable(scene),
             SceneRaycaster(canvas,scene,camera,renderer),
         ];
 
@@ -228,6 +247,7 @@ export default (canvas,id,district,root) => {
         //pickHelper.pick(pickPosition, scene, camera, time);
 
         renderer.render(scene, camera);
+        //renderer2.render(scene2, camera);
     }
 
     function load(newDistrict) {
