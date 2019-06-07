@@ -7,9 +7,7 @@ export default class Header extends React.Component {
     //const refContainer = useRef(element => this.threeRootElement = element);
     
     componentDidMount() {
-        this.sceneManager = 
-            threeEntryPoint(this.threeRootElement, "LittleGreenDiv", this.props.district, this.props.root );
-        console.log('this.sceneManager',this.sceneManager);
+        this.sceneManager = threeEntryPoint(this.threeRootElement, "canvas", this.props.district, this.props.root, this.props.renderer );
     }
 
     componentDidUpdate(prevProps) {
@@ -19,6 +17,18 @@ export default class Header extends React.Component {
             if (this.sceneManager !== null) {
                 console.log("componentDidUpdate : this.sceneManager != null");
                 this.sceneManager.load(this.props.district);
+            }
+        }
+        if (this.props.zoom !== prevProps.zoom) {
+            if (this.sceneManager !== null) {
+                console.log("componentDidUpdate : this.sceneManager != null");
+                this.sceneManager.zoom(this.props.zoom);
+            }
+        }
+        if (this.props.renderer !== prevProps.renderer) {
+            if (this.sceneManager !== null) {
+                console.log("componentDidUpdate : this.sceneManager != null");
+                this.sceneManager.render(this.props.renderer);
             }
         }
     }
@@ -31,7 +41,9 @@ export default class Header extends React.Component {
     render () {
         //const inputEl = useRef(null);
         return (
-            <div className="header-header" ref={element => this.threeRootElement = element} id="LittleGreenDiv" />
+            <div style={{width:"100&",height:"100%"}}>
+                <div className="header-header" ref={element => this.threeRootElement = element} id="canvas" />
+            </div>
         );
     }
 }

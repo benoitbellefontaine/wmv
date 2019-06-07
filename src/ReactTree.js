@@ -16,11 +16,11 @@ export default class Tree extends Component {
     };
 
     renderTreeItems = (items) => 
-        items.children.map((item, i) => {
-        const { label, children } = item;
+        items.map((item, i) => {
+        const { name, children } = item;
         return (
             <li className="menu__item" key={uniqueId(`item-${i}-`)}>
-                {item.label}
+                {name}
             {this.renderSubTree(children)}
             </li>
         );
