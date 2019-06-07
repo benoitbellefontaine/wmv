@@ -4,10 +4,10 @@ import SceneManager from './SceneManager';
 import alphaTexture from '../assets/textures/UV_Grid_Sm.jpg';
 import alphaMale from '../assets/obj/districts/male02.obj';
 
-export default (container,id,district,root,renderer) => {
+export default (container,id,district,root) => {
 
         let canvas = createCanvas(document, container);
-        let sceneManager = SceneManager(canvas, id, district, root, renderer);
+        let sceneManager = SceneManager(canvas, id, district, root);
 
         //useEffect(() => console.log('mounted'), []);
 

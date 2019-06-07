@@ -26,7 +26,7 @@ OBJLoader(THREE);
 
 const OrbitControls = require("three-orbit-controls")(THREE);
 
-export default (canvas,id,district,root,rendererType) => {
+export default (canvas,id,district,root) => {
 
     const clock = new THREE.Clock();
     const origin = new THREE.Vector3(0,0,0);
@@ -54,12 +54,13 @@ export default (canvas,id,district,root,rendererType) => {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xf0f0f0 );
     const scene2 = new THREE.Scene();
+    scene2.background = new THREE.Color( 0xf00000 );
 
     for (var i = 0; i<root.elements.length; i++) {
-        scene.add(root.elements[i]);
+        //scene.add(root.elements[i]);
     }
 
-    scene.add(root.cubes);
+    //scene.add(root.cubes);
 
     let renderer = buildRender(screenDimensions);
     let renderer2 = buildCSS3DRender(screenDimensions);
@@ -67,10 +68,6 @@ export default (canvas,id,district,root,rendererType) => {
     const controls = buildControls(camera,id);
     const sceneSubjects = createSceneSubjects(scene);
     const sceneCSS3DSubjects = createSceneCSS3DSubjects(scene,scene2);
-
-    //ScenePeriodicTable(scene2);
-
-   // console.log(scene2)
     
     /* 
         function f1(subject, callback) {
@@ -158,16 +155,17 @@ export default (canvas,id,district,root,rendererType) => {
     }
 
     function buildCSS3DRender({ width, height }) {
-        const renderer = new CSS3DRenderer();
-        renderer.setSize(width, height);
-        renderer.domElement.style.position = 'absolute';
-		renderer.domElement.style.top = 0;       
-        return renderer; 
+        const renderer2 = new CSS3DRenderer();
+        renderer2.setSize(width, height);
+        renderer2.domElement.style.position = 'absolute';
+        renderer2.domElement.style.top = 0;
+        //document.body.appendChild( renderer2.domElement );
+        return renderer2; 
     }
 
     function buildCamera({ width, height }) {
         // pers
-        /*
+        
         const aspectRatio = width / height;
         const fieldOfView = 60;
         const nearPlane = 4;
@@ -175,7 +173,7 @@ export default (canvas,id,district,root,rendererType) => {
 
         const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
         camera.position.set(-200,200,200)
-        */
+        
         //const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
         //camera.position.z = 40;
 
@@ -190,11 +188,12 @@ export default (canvas,id,district,root,rendererType) => {
         camera.position.z = 15000; */
         
         //ortho
+/*
         var frustumSize = 500;
         const aspect = width / height;
-        const camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 );
-        camera.position.set( - 200, 200, 200 );
-
+        const camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 500 );
+        camera.position.set(-10,10,10);
+*/
         return camera;
     }
 
@@ -210,25 +209,26 @@ export default (canvas,id,district,root,rendererType) => {
 
     function createSceneSubjects(scene) {
         const sceneSubjects = [
-            GeneralLights(scene),
+            //GeneralLights(scene),
             //SceneSubject(scene),
-            //ScenePlane(scene),
+            ScenePlane(scene),
             //SceneHumanHierarchy(scene),
             //SceneHierarchy(scene),
-            SceneHelpers(scene),
+            //SceneHelpers(scene),
             //SceneFemale(scene),
             //ScenePeriodicTable(scene),
-            SceneRaycaster(canvas,scene,camera,renderer),
+            //SceneRaycaster(canvas,scene,camera,renderer),
         ];
-
+        console.log('sceneSubjects',sceneSubjects)
         return sceneSubjects;
     }
 
     function createSceneCSS3DSubjects(scene,scene2) {
-        const sceneSubjects = [
+        const SceneCSS3DSubjects = [
             SceneHouse(scene,scene2),
         ];
-        return sceneSubjects;
+        console.log('SceneCSS3DSubjects',SceneCSS3DSubjects)
+        return SceneCSS3DSubjects;
     }
 
     const pickPosition = {x: 0, y: 0};
@@ -270,7 +270,7 @@ export default (canvas,id,district,root,rendererType) => {
         //pickHelper.pick(pickPosition, scene, camera, time);
 
         renderer2.render(scene2, camera);
-        //renderer.render(scene, camera);
+        renderer .render(scene, camera);
         
     }
 
@@ -287,26 +287,6 @@ export default (canvas,id,district,root,rendererType) => {
         if (zoom === 1)
             camera.position.z += 10;
         else camera.position.z += -10;
-    }
-
-    function render(value) {
-        if (value === 'WEBGL') {
-            console.log('WEBGL')
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); 
-            const DPR = window.devicePixelRatio ? window.devicePixelRatio : 1;
-            renderer.setPixelRatio(DPR);
-            renderer.setSize(screenDimensions.width,screenDimensions.height);
-
-            renderer.gammaInput = true;
-            renderer.gammaOutput = true; 
-        }
-        else if (value === 'CSS3D') {
-            console.log('CSS3D')
-            renderer = new CSS3DRenderer();
-            renderer.setSize(screenDimensions.width,screenDimensions.height);
-            renderer.domElement.style.position = 'absolute';
-            renderer.domElement.style.top = 0;       
-        }
     }
 
     function updateCameraPositionRelativeToMouse() {
@@ -354,7 +334,6 @@ export default (canvas,id,district,root,rendererType) => {
         onMouseOut,
         onMouseLeave,
         load,
-        zoom,
-        render
+        zoom
     }
 }
