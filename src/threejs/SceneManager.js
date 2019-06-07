@@ -6,6 +6,7 @@ import SceneHumanHierarchy  from './SceneHumanHierarchy';
 import SceneHelpers         from './SceneHelpers';
 import ScenePeriodicTable   from './ScenePeriodicTable';
 import SceneRaycaster       from './SceneRaycaster';
+import SceneHouse           from './SceneHouse';
 //import SceneMale          from './SceneMale';
 //import SceneFemale        from './SceneFemale';
 //import SceneFlatiron      from './SceneFlatiron';
@@ -25,7 +26,7 @@ OBJLoader(THREE);
 
 const OrbitControls = require("three-orbit-controls")(THREE);
 
-export default (canvas,id,district,root) => {
+export default (canvas,id,district,root,rendererType) => {
 
     const clock = new THREE.Clock();
     const origin = new THREE.Vector3(0,0,0);
@@ -47,9 +48,12 @@ export default (canvas,id,district,root) => {
 
     let obj;
 
-    const scene = buildScene(district,loadOBJFile);
-
+    //const scene = buildScene(district,loadOBJFile);
     //const scene2 = new THREE.Scene();
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0xf0f0f0 );
+    const scene2 = new THREE.Scene();
 
     for (var i = 0; i<root.elements.length; i++) {
         scene.add(root.elements[i]);
@@ -57,11 +61,12 @@ export default (canvas,id,district,root) => {
 
     scene.add(root.cubes);
 
-    const renderer = buildRender(screenDimensions);
-    //const renderer2 = buildCSS3DRender(screenDimensions);
+    let renderer = buildRender(screenDimensions);
+    let renderer2 = buildCSS3DRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
     const controls = buildControls(camera,id);
     const sceneSubjects = createSceneSubjects(scene);
+    const sceneCSS3DSubjects = createSceneCSS3DSubjects(scene,scene2);
 
     //ScenePeriodicTable(scene2);
 
@@ -80,8 +85,8 @@ export default (canvas,id,district,root) => {
 
     function buildScene(district,callback) {
         const scene = new THREE.Scene();
-        //scene.background = new THREE.Color("#FFF");
-        scene.background = new THREE.Color("#000");
+        scene.background = new THREE.Color("#FFF");
+        //scene.background = new THREE.Color("#000");
         //callback(scene,district)
         return scene;
     }
@@ -161,14 +166,16 @@ export default (canvas,id,district,root) => {
     }
 
     function buildCamera({ width, height }) {
+        // pers
+        /*
         const aspectRatio = width / height;
         const fieldOfView = 60;
         const nearPlane = 4;
-        const farPlane = 200;
+        const farPlane = 1000;
 
         const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        camera.position.z = 75;
-
+        camera.position.set(-200,200,200)
+        */
         //const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
         //camera.position.z = 40;
 
@@ -180,7 +187,13 @@ export default (canvas,id,district,root) => {
         // flatiron 
         /*
         const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 25000 );
-		camera.position.z = 15000; */
+        camera.position.z = 15000; */
+        
+        //ortho
+        var frustumSize = 500;
+        const aspect = width / height;
+        const camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 );
+        camera.position.set( - 200, 200, 200 );
 
         return camera;
     }
@@ -208,6 +221,13 @@ export default (canvas,id,district,root) => {
             SceneRaycaster(canvas,scene,camera,renderer),
         ];
 
+        return sceneSubjects;
+    }
+
+    function createSceneCSS3DSubjects(scene,scene2) {
+        const sceneSubjects = [
+            SceneHouse(scene,scene2),
+        ];
         return sceneSubjects;
     }
 
@@ -240,14 +260,18 @@ export default (canvas,id,district,root) => {
         for(let i=0; i<sceneSubjects.length; i++)
             sceneSubjects[i].update(elapsedTime);
 
+        for(let i=0; i<sceneCSS3DSubjects.length; i++)
+            sceneCSS3DSubjects[i].update(elapsedTime);
+
         //updateCameraPositionRelativeToMouse();
 
         //controls.update();
 
         //pickHelper.pick(pickPosition, scene, camera, time);
 
-        renderer.render(scene, camera);
-        //renderer2.render(scene2, camera);
+        renderer2.render(scene2, camera);
+        //renderer.render(scene, camera);
+        
     }
 
     function load(newDistrict) {
@@ -263,6 +287,26 @@ export default (canvas,id,district,root) => {
         if (zoom === 1)
             camera.position.z += 10;
         else camera.position.z += -10;
+    }
+
+    function render(value) {
+        if (value === 'WEBGL') {
+            console.log('WEBGL')
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); 
+            const DPR = window.devicePixelRatio ? window.devicePixelRatio : 1;
+            renderer.setPixelRatio(DPR);
+            renderer.setSize(screenDimensions.width,screenDimensions.height);
+
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true; 
+        }
+        else if (value === 'CSS3D') {
+            console.log('CSS3D')
+            renderer = new CSS3DRenderer();
+            renderer.setSize(screenDimensions.width,screenDimensions.height);
+            renderer.domElement.style.position = 'absolute';
+            renderer.domElement.style.top = 0;       
+        }
     }
 
     function updateCameraPositionRelativeToMouse() {
@@ -281,6 +325,7 @@ export default (canvas,id,district,root) => {
         camera.updateProjectionMatrix();
         
         renderer.setSize(width, height);
+        renderer2.setSize(width, height);
     }
 
     function onMouseMove(x, y) {
@@ -309,6 +354,7 @@ export default (canvas,id,district,root) => {
         onMouseOut,
         onMouseLeave,
         load,
-        zoom
+        zoom,
+        render
     }
 }

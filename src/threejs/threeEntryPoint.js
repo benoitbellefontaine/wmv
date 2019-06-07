@@ -4,14 +4,10 @@ import SceneManager from './SceneManager';
 import alphaTexture from '../assets/textures/UV_Grid_Sm.jpg';
 import alphaMale from '../assets/obj/districts/male02.obj';
 
-var THREE = require('three');
-var OBJLoader = require('three-obj-loader');
-OBJLoader(THREE);
-
-export default (container,id,district,root) => {
+export default (container,id,district,root,renderer) => {
 
         let canvas = createCanvas(document, container);
-        let sceneManager = SceneManager(canvas, id, district, root);
+        let sceneManager = SceneManager(canvas, id, district, root, renderer);
 
         //useEffect(() => console.log('mounted'), []);
 
@@ -27,9 +23,17 @@ export default (container,id,district,root) => {
             return canvas;
         }
 
+        /*
+  window.addEventListener('mousemove', setPickPosition);
+  window.addEventListener('mouseout', clearPickPosition);
+  window.addEventListener('mouseleave', clearPickPosition);
+        */
+
         function bindEventListeners() {
             window.onresize = resizeCanvas;
-            window.onmousemove = mouseMove;
+            window.onmousemove  = mouseMove;
+            window.onmouseout   = mouseOut;
+            window.onmouseleave = mouseLeave;
             resizeCanvas(); 
         }
 
@@ -50,12 +54,21 @@ export default (container,id,district,root) => {
             sceneManager.onMouseMove(screenX-canvasHalfWidth, screenY-canvasHalfHeight);
         }
 
+        function mouseOut({screenX, screenY}) {
+            sceneManager.onMouseOut(screenX-canvasHalfWidth, screenY-canvasHalfHeight);
+        }
+
+        function mouseLeave({screenX, screenY}) {
+            sceneManager.onMouseLeave(screenX-canvasHalfWidth, screenY-canvasHalfHeight);
+        }
+
         function render(time) {
+            //pickHelper.pick(pickPosition, scene, camera, time);
             requestAnimationFrame(render);
-            sceneManager.update();
+            sceneManager.update(time);
         }
 
     //});
-    return sceneManager;
+    return sceneManager
 
 }
