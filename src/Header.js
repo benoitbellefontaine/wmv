@@ -7,7 +7,7 @@ export default class Header extends React.Component {
     //const refContainer = useRef(element => this.threeRootElement = element);
     
     componentDidMount() {
-        this.sceneManager = threeEntryPoint(this.threeRootElement, "canvas", this.props.district, this.props.root, this.props.renderer );
+        this.sceneManager = threeEntryPoint(this.threeRootElement, "canvas", this.props.district, this.props.root );
     }
 
     componentDidUpdate(prevProps) {
@@ -23,12 +23,6 @@ export default class Header extends React.Component {
             if (this.sceneManager !== null) {
                 console.log("componentDidUpdate : this.sceneManager != null");
                 this.sceneManager.zoom(this.props.zoom);
-            }
-        }
-        if (this.props.renderer !== prevProps.renderer) {
-            if (this.sceneManager !== null) {
-                console.log("componentDidUpdate : this.sceneManager != null");
-                this.sceneManager.render(this.props.renderer);
             }
         }
     }

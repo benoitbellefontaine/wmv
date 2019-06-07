@@ -99,14 +99,14 @@ class App extends React.Component {
             var material = new THREE.MeshStandardMaterial( { color: 0x8888ff, metalness: 0.9, roughness: 0.9, transparent:true, opacity:0.3 } )
             var mesh = new THREE.Mesh(geometry,material);
             mesh.position.set(i*(size),j*(size),k*(size));
-            //cubes.add(mesh);
+            cubes.add(mesh);
           }
         }
       }
 
       cubes.add(root);
 
-      //this.renderTreeItems(elements,data.children);
+      this.renderTreeItems(elements,data.children);
 
       return {root,cubes,elements};
 
