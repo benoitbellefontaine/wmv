@@ -172,7 +172,7 @@ export default (canvas,id,district,root) => {
         const farPlane = 1000;
 
         const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        camera.position.set(-200,200,200)
+        camera.position.set(-400,400,400)
         
         //const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
         //camera.position.z = 40;
