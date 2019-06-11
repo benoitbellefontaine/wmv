@@ -1,19 +1,59 @@
 import * as THREE from 'three';
-import { CSS3DObject, CSS3DRenderer } from 'three-css3drenderer';
+import Wall from './house/Wall'
+import WallWithHoles from './house/WallWithHoles'
+//import { CSS3DObject, CSS3DRenderer } from 'three-css3drenderer';
 //var THREE = require('three');
 //var OBJLoader = require('three-obj-loader');
 
 export default (scene,scene2) => {
 
     const group = new THREE.Group();
-    const group2 = new THREE.Group();
 
-    //let object;
+    const floors = Math.ceil( Math.random()*10 );
+    console.log('# of floors',floors);
+
+    for (var i=0;i<floors;i++) {
+        createFloor(i,80)
+    }
+    
+    function createFloor(floor,height) {
+        // interior
+        const wall1 = WallWithHoles(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, 0, 0 ));
+        const wall2 = WallWithHoles(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        //const wall3 = WallWithHoles(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, 90 * THREE.Math.DEG2RAD, 0 ));
+        //const wall4 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+
+        // exterior
+        const wall5 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, -200 ), new THREE.Euler( 0, 0, 0 ));
+        const wall6 = Wall(scene,'chocolate',new THREE.Vector3( 200, floor*height, -200 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        const wall7 = Wall(scene,'chocolate',new THREE.Vector3( 200, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        const wall8 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 200 ), new THREE.Euler( 0, 0, 0 ));
+        const wall9 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, -200 ), new THREE.Euler( 0, 0, 0 ));
+        const wall10 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, -200 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        const wall11 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        const wall12 = WallWithHoles(scene,'chocolate',new THREE.Vector3( -200, floor*height, 200 ), new THREE.Euler( 0, 0, 0 ));
+
+        /*
+        const wall8 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        const wall9 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, 0, 0 ));
+        const wall10 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 180 * THREE.Math.DEG2RAD, 0 ));
+        const wall11 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, 90 * THREE.Math.DEG2RAD, 0 ));
+        const wall12 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        */
+
+        var geometry = new THREE.PlaneBufferGeometry( 400, 400 );
+        var material = new THREE.MeshBasicMaterial( { color: 'firebrick', wireframe: false, wireframeLinewidth: 1, side: THREE.DoubleSide, transparent:true, opacity:0.7 } );
+        var meshFloor = new THREE.Mesh( geometry, material );
+        meshFloor.position.copy( new THREE.Vector3( 0, (floor+1)*height, 0 ) );
+        meshFloor.rotation.copy( new THREE.Euler( 90 * THREE.Math.DEG2RAD, 0, 0 ) );
+        scene.add( meshFloor );
+    }
 
     var material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, side: THREE.DoubleSide } );    
 
+    // room
     // left
-    createPlane( 100, 100, '#D2691E', new THREE.Vector3( - 50, 0, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ) );
+    createPlane( 100, 100, 'chocolate', new THREE.Vector3( - 50, 0, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ) );
     // right
     createPlane( 100, 100, 'saddlebrown', new THREE.Vector3(  0, 0, 50 ), new THREE.Euler( 0, 0, 0 ) );
     // top
@@ -21,7 +61,7 @@ export default (scene,scene2) => {
     // left2
     createPlane( 100, 100, 'rosybrown', new THREE.Vector3(   50, 0, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ) );
     // right2
-    createPlane( 100, 100, '#B22222', new THREE.Vector3(  0, 0, -50 ), new THREE.Euler( 0, 0, 0 ) );
+    createPlane( 100, 100, 'firebrick', new THREE.Vector3(  0, 0, -50 ), new THREE.Euler( 0, 0, 0 ) );
     // bottom
     createPlane( 300, 300, 'seagreen', new THREE.Vector3( 0, - 50, 0 ), new THREE.Euler( - 90 * THREE.Math.DEG2RAD, 0, 0 ) );     
     
@@ -44,8 +84,9 @@ export default (scene,scene2) => {
         group.add( mesh );
     }
 
-    //scene2.add(group2);
-    scene.add(group);
+    //scene.add(group);
+
+
 
     //init();
                 
