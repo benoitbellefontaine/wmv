@@ -3,9 +3,12 @@ import Wall from './house/Wall';
 import WallWithHoles from './house/WallWithHoles';
 import Door from './house/Door';
 
-export default (scene,scene2) => {
+export default (scene) => {
 
     const group = new THREE.Group();
+
+    const doorOffsetX = 15;
+    const doorOffsetY = 35;
 
     const floors = Math.ceil( Math.random()*10 );
     console.log('# of floors',floors);
@@ -19,6 +22,7 @@ export default (scene,scene2) => {
         const wall1 = WallWithHoles(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, 0, 0 ));
         const door1 = Door(scene,'chocolate',new THREE.Vector3( 40+15, floor*height+35, 0 ), new THREE.Euler( 0, 0, 0 ));
         const wall2 = WallWithHoles(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
+        const door2 = Door(scene,'chocolate',new THREE.Vector3( 40+15, floor*height+35, 0 ), new THREE.Euler( 0, 0, 0 ));
         //const wall3 = WallWithHoles(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, 90 * THREE.Math.DEG2RAD, 0 ));
         //const wall4 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
 
@@ -30,8 +34,13 @@ export default (scene,scene2) => {
         const wall9 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, -200 ), new THREE.Euler( 0, 0, 0 ));
         const wall10 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, -200 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
         const wall11 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));
-        const wall12 = WallWithHoles(scene,'chocolate',new THREE.Vector3( -200, floor*height, 200 ), new THREE.Euler( 0, 0, 0 ));
-        const door12 = Door(scene,'chocolate',new THREE.Vector3( -145, floor*height+35, 200 ), new THREE.Euler( 0, 0, 0 ));
+        if (!floor) {
+            const wall12 = WallWithHoles(scene,'chocolate',new THREE.Vector3( -200, floor*height, 200 ), new THREE.Euler( 0, 0, 0 ));
+            const door12 = Door(scene,'chocolate',new THREE.Vector3( -160+15, floor*height+35, 200 ), new THREE.Euler( 0, 0, 0 ));
+        }
+        else {
+            const wall12 = Wall(scene,'chocolate',new THREE.Vector3( -200, floor*height, 200 ), new THREE.Euler( 0, 0, 0 ));
+        }
         
         /*
         const wall8 = Wall(scene,'chocolate',new THREE.Vector3( 0, floor*height, 0 ), new THREE.Euler( 0, - 90 * THREE.Math.DEG2RAD, 0 ));

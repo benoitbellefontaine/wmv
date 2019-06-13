@@ -17,7 +17,7 @@ export default scene => {
 
     const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 
-    planeMesh.position.copy( new THREE.Vector3( 0, 0, -25 ) );
+    planeMesh.position.copy( new THREE.Vector3( 0, -1, -25 ) );
     planeMesh.rotation.copy( new THREE.Euler( - 90 * THREE.Math.DEG2RAD, 0, 0 ) );
 
     group.add(planeMesh);

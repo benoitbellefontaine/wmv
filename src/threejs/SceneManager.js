@@ -7,10 +7,12 @@ import SceneHelpers         from './SceneHelpers';
 import ScenePeriodicTable   from './ScenePeriodicTable';
 import SceneRaycaster       from './SceneRaycaster';
 import SceneHouse           from './SceneHouse';
+import ScenePointCloud      from './ScenePointCloud';
 //import SceneMale          from './SceneMale';
 //import SceneFemale        from './SceneFemale';
 //import SceneFlatiron      from './SceneFlatiron';
 import GeneralLights        from './GeneralLights';
+import ScenePointsDynamic   from './ScenePointsDynamic';
 
 import alphaTexture     from '../assets/textures/UV_Grid_Sm.jpg';
 import alphaMale  from '../assets/obj/districts/male02.obj';
@@ -67,7 +69,7 @@ export default (canvas,id,district,root) => {
     const camera = buildCamera(screenDimensions);
     const controls = buildControls(camera,id);
     const sceneSubjects = createSceneSubjects(scene);
-    const sceneCSS3DSubjects = createSceneCSS3DSubjects(scene,scene2);
+    const sceneCSS3DSubjects = createSceneCSS3DSubjects(scene);
     
     /* 
         function f1(subject, callback) {
@@ -171,11 +173,11 @@ export default (canvas,id,district,root) => {
         const nearPlane = 4;
         const farPlane = 1000;
 
-        const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        camera.position.set(-400,400,400)
+        /*const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+        camera.position.set(-40,40,40)*/
         
         //const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
-        //camera.position.z = 40;
+        //camera.position.z = 400;
 
         // male
         //const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
@@ -188,12 +190,20 @@ export default (canvas,id,district,root) => {
         camera.position.z = 15000; */
         
         //ortho
-/*
-        var frustumSize = 500;
+
+        /*var frustumSize = 100;
         const aspect = width / height;
-        const camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 500 );
-        camera.position.set(-10,10,10);
-*/
+        const camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -50, 50 );
+        camera.position.set(-10,10,10);*/
+
+        /*const camera = new THREE.PerspectiveCamera( 15, window.innerWidth / window.innerHeight, 0.01, 40 );
+        camera.position.x = 2;
+        camera.position.z = - 2;
+        camera.up.set( 0, 0, 1 );*/
+
+        const camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 50000 );
+        camera.position.set( 0, 700, 7000 );
+
         return camera;
     }
 
@@ -209,12 +219,14 @@ export default (canvas,id,district,root) => {
 
     function createSceneSubjects(scene) {
         const sceneSubjects = [
-            //GeneralLights(scene),
+            GeneralLights(scene),
             //SceneSubject(scene),
-            ScenePlane(scene),
+            //ScenePlane(scene),
             //SceneHumanHierarchy(scene),
             //SceneHierarchy(scene),
-            //SceneHelpers(scene),
+            SceneHelpers(scene),
+            ScenePointCloud(scene),
+            ScenePointsDynamic(scene,renderer,camera),
             //SceneFemale(scene),
             //ScenePeriodicTable(scene),
             //SceneRaycaster(canvas,scene,camera,renderer),
@@ -223,9 +235,9 @@ export default (canvas,id,district,root) => {
         return sceneSubjects;
     }
 
-    function createSceneCSS3DSubjects(scene,scene2) {
+    function createSceneCSS3DSubjects(scene) {
         const SceneCSS3DSubjects = [
-            SceneHouse(scene,scene2),
+            //SceneHouse(scene),
         ];
         console.log('SceneCSS3DSubjects',SceneCSS3DSubjects)
         return SceneCSS3DSubjects;
@@ -248,10 +260,6 @@ export default (canvas,id,district,root) => {
         pickPosition.x = -100000;
         pickPosition.y = -100000;
     }
-        
-    /*window.addEventListener('mousemove', setPickPosition);
-    window.addEventListener('mouseout', clearPickPosition);
-    window.addEventListener('mouseleave', clearPickPosition);*/
 
     function update(time) {
         time *= 0.001;
@@ -269,8 +277,7 @@ export default (canvas,id,district,root) => {
 
         //pickHelper.pick(pickPosition, scene, camera, time);
 
-        renderer2.render(scene2, camera);
-        renderer .render(scene, camera);
+        renderer.render(scene, camera);
         
     }
 
